@@ -34,9 +34,15 @@
   ],
   "experience": [
     {
+      "company": "Imarti Media (Kent RO)",
+      "role": "UI/UX Designer",
+      "duration": "May 2026 - Present",
+      "description": "As a UI/UX Designer at Imarti Media, I create modern, intuitive, and visually engaging digital experiences. I focus on user-centered design, clean interfaces, thoughtful interactions, and responsive experiences while collaborating with teams to turn ideas into impactful digital products."
+    },
+    {
       "company": "Buffalo Soldiers",
       "role": "UI/UX Designer",
-      "duration": "July 2025 - Present",
+      "duration": "July 2025 - April 2026",
       "description": "Works as a UI/UX Designer, focused on crafting user-centered digital experiences that are both visually appealing and highly functional. Involves understanding user needs, translating them into intuitive interfaces, and collaborating closely with developers and product teams to deliver seamless designs. Specializes in creating wireframes, interactive prototypes, and polished UI designs while ensuring accessibility and responsiveness across platforms."
     },
     {
@@ -88,133 +94,133 @@
       "description": "Kohinoor Indian Dark Rum is a premium dark rum brand known for its unique flavor and quality. This project is a UI/UX design for the brand's website.",
       "url": "https://kohinoorindianrum.com/",
       "image": "/projects/kohinoor.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Nasscom Technology - UI/UX Design",
       "description": "UI design for the NASSCOM Technology & Leadership Forum, a leading technology event that connects innovation, leadership, and industry insights.",
       "url": "https://www.nasscom.in/ntlf/",
       "image": "/projects/nasscom.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Cyber Suraksha Drive - Security Awareness Campaign UI/UX Design",
       "description": "UI design for Data Security Council of India's Cyber Security Awareness Month 2025 campaign, a nationwide initiative promoting digital safety and cybersecurity best practices.",
       "url": "https://www.dsci.in/cyber-security-awareness-month-2025/",
       "image": "/projects/dsci.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "GHD Infra - UI/UX Design",
       "description": "UI design for GHD Group, showcasing luxurious vacation homes and premium communities in Goa with a focus on comfort, modern design, and strong investment value.",
       "url": "https://ghdinfra.com/",
       "image": "/projects/ghd.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Healyos - Physiotherapist in Pune | Home Services & Clinic Treatments",
       "description": "UI design for Healyos, a healthcare platform focused on making physiotherapy more accessible through home services and clinic treatments in Pune.",
       "url": "https://www.healyos.com/",
       "image": "/projects/health.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Chandan Sharma - Portfolio Website UI/UX Design",
       "description": "Portfolio site for Chandan Sharma, a leading digital marketing strategist and published author in India, blending creativity, strategy, and technology.",
       "url": "https://sharmachandan.in/",
       "image": "/projects/chandan.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Sancheti Orthopedic Hospital - UI/UX Design",
       "description": "UI/UX design for Sancheti, recognized as the best orthopaedic hospital in Western India, providing comprehensive care through its expert specialists.",
       "url": "https://sanchetihospital.org/",
       "image": "/projects/hos.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Vaultify: Financial App Design",
       "description": "Vaultify helps users track expenses, manage budgets, and visualize their financial goals with ease, balancing functionality with a user-friendly design.",
       "url": "https://www.behance.net/gallery/224284721/Vaultify-Financial-App-Design",
       "image": "/projects/vaultify.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Case Study: MPokket App",
       "description": "Analyzes the interface design of the mPokket mobile app, a lending platform aimed at students and young professionals, evaluating usability and key design challenges.",
       "url": "https://www.behance.net/gallery/224218905/Case-Study-MPokket-App",
       "image": "/projects/mpokket.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Case Study: Souled Store App",
       "description": "Redesigning the UX, refining navigation, and optimizing user flows like course searches, while maintaining the brand's identity and visual appeal.",
       "url": "https://www.behance.net/gallery/216495357/Case-Study-Souled-store-App",
       "image": "/projects/souled.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "UI UX: Dot & Key",
       "description": "Dot & Key is a skincare brand focused on creating innovative, effective, and safe products, known for unique formulations and high-quality ingredients.",
       "url": "https://www.behance.net/gallery/212568913/UI-Study-Redesign-of-Dot-Key-App",
       "image": "/projects/dotkey.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Food Line - Food Donation App",
       "description": "An application that links food donors with organizations and individuals in need, streamlining the donation process and minimizing food waste.",
       "url": "https://www.behance.net/gallery/195531883/FOODLINE-FOOD-DONATION-APP",
       "image": "/projects/food.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Kaashth Kari - Banaras Wood Carving",
       "description": "Craft research and documentation facilitating students' comprehension of diverse crafts and cultural practices of India while fostering empathy towards artisans.",
       "url": "https://www.behance.net/gallery/195738421/Craft-Research-Documentation-Banaras-Wood-Carving",
       "image": "/projects/kashthkari.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Aatank",
       "description": "Branding and promotion for Aatank, an electrifying music and new year's celebration event.",
       "url": "https://www.behance.net/gallery/212956687/BRANDING-AND-PROMOTION-AATANK",
       "image": "/projects/aatank.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Branding & Promotion: Kaleido",
       "description": "Kaleido is a hypothetical lifestyle brand that celebrates individuality and self-expression through vibrant, versatile products.",
       "url": "https://www.behance.net/gallery/212953211/Branding-and-Promotion-Kaleido",
       "image": "/projects/kaleido.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "METROSPOTTER",
       "description": "Offers real-time updates on your current location, upcoming stations, and transfer points, ensuring that you never miss your stop.",
       "url": "https://www.behance.net/gallery/205169173/Case-Study-Delhi-Metro/modules/1164716079",
       "image": "/projects/metro.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Case Study: FDDI Website",
       "description": "Explores the user experience design process for the FDDI website, focusing on enhancing usability and accessibility.",
       "url": "https://www.behance.net/gallery/195920205/UX-Case-study-FDDI-website",
       "image": "/projects/fddi.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Fashion Styling: Fashion Icon Looks",
       "description": "Explores iconic looks from legendary figures in fashion, blending timeless elegance with contemporary flair to create bold, statement-making ensembles.",
       "url": "https://www.behance.net/gallery/214702325/Fashion-Styling-Fashion-Icon-Looks",
       "image": "/projects/fashion-icon.png",
-    "skills": []
+      "skills": []
     },
     {
       "title": "Fashion Styling: Editorial Shoot",
       "description": "Designed and executed captivating fashion looks for editorial shoots, blending creativity with current trends to enhance brand identity.",
       "url": "https://www.behance.net/gallery/208087369/Fashion-Styling-Editorial-Shoot",
       "image": "/projects/fashion.png",
-    "skills": []
+      "skills": []
     }
   ]
 }
