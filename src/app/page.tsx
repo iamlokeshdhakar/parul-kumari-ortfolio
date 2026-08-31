@@ -13,10 +13,10 @@ export default function Home() {
       <main>
       
         <Hero />
-        {/* <About />
-        <Skills />
-        <Experience />
-        <Projects /> */}
+        <About />
+        {/* <Skills /> */}
+        {/* <Experience /> */}
+        {/* <Projects /> */}
       </main>
       <Footer />
     </>
