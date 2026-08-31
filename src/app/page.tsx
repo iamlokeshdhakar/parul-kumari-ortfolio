@@ -11,11 +11,12 @@ export default function Home() {
     <>
       <Navbar />
       <main>
-        <Hero />
+        <div className="w-full h-screen flex justify-center items-center"> Hero Section</div>
+        {/* <Hero />
         <About />
         <Skills />
         <Experience />
-        <Projects />
+        <Projects /> */}
       </main>
       <Footer />
     </>
