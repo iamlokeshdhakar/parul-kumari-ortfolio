@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Geist_Mono, Inter, Montserrat } from "next/font/google";
 import "./globals.css";
+import { PortfolioLoader } from "@/components/loader/portfolio-loader";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
@@ -45,7 +46,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <PortfolioLoader>{children}</PortfolioLoader>
         </ThemeProvider>
       </body>
     </html>
