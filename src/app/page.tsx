@@ -11,9 +11,9 @@ export default function Home() {
     <>
       <Navbar />
       <main>
-        <div className="w-full h-screen flex justify-center items-center"> Hero Section</div>
-        {/* <Hero />
-        <About />
+      
+        <Hero />
+        {/* <About />
         <Skills />
         <Experience />
         <Projects /> */}
