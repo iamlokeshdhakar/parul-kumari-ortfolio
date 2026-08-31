@@ -3,15 +3,13 @@
 import {
   type MotionValue,
   motion,
-  useMotionTemplate,
   useMotionValue,
   useReducedMotion,
-  useScroll,
   useSpring,
   useTransform,
 } from "framer-motion";
 import type { PointerEvent, ReactNode } from "react";
-import { useRef } from "react";
+import { LightRays } from "@/components/ui/light-rays";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -207,14 +205,10 @@ function Sparkle() {
 }
 
 export function Hero() {
-  const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const xPercent = useTransform(mx, (v) => `${(v + 0.5) * 100}%`);
-  const yPercent = useTransform(my, (v) => `${(v + 0.5) * 100}%`);
-  const spotlight = useMotionTemplate`radial-gradient(560px circle at ${xPercent} ${yPercent}, rgba(40,87,255,0.14), transparent 70%)`;
 
   const handlePointerMove = (e: PointerEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -222,39 +216,26 @@ export function Hero() {
     my.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-  const blobY = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [0, prefersReducedMotion ? 0 : 90],
-  );
-
   return (
     <section
       id="home"
-      ref={sectionRef}
       onPointerMove={handlePointerMove}
       className="relative overflow-hidden bg-canvas pt-32 pb-24 lg:pt-44 lg:pb-32 dark:bg-near-black"
     >
-      {/* Background blobs */}
-      <motion.div
-        style={{ y: blobY }}
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0"
-      >
-        <div className="absolute -top-24 -left-24 size-105 rounded-full bg-cobalt/10 blur-3xl" />
-        <div className="absolute top-1/3 -right-32 size-95 rounded-full bg-[#f4b13f]/15 blur-3xl" />
-      </motion.div>
-
-      {/* Cursor-driven spotlight */}
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{ background: prefersReducedMotion ? undefined : spotlight }}
-      />
+      {!prefersReducedMotion && (
+        <LightRays
+          raysOrigin="top-center"
+          raysColor="#2857ff"
+          raysSpeed={1}
+          lightSpread={0.9}
+          rayLength={1.4}
+          followMouse
+          mouseInfluence={0.15}
+          noiseAmount={0.04}
+          distortion={0.03}
+          className="z-0"
+        />
+      )}
 
       {/* Corner accents */}
       <ParallaxLayer
