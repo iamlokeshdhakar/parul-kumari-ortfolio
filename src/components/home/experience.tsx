@@ -1,18 +1,24 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import {
-  Carousel,
-  type CarouselApi,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import dynamic from "next/dynamic";
+import { Component, type ReactNode, useEffect, useRef, useState } from "react";
 import info from "@/lib/info.json";
 
-const EXPERIENCE = info.experience;
+const ExperienceGallery = dynamic(
+  () => import("./experience-gallery").then((mod) => mod.ExperienceGallery),
+  { ssr: false },
+);
+
+type Experience = (typeof info.experience)[number];
+
+const EXPERIENCE: Experience[] = info.experience;
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -21,25 +27,49 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
 };
 
+class GalleryErrorBoundary extends Component<
+  { children: ReactNode; fallback: ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    return this.state.hasError ? this.props.fallback : this.props.children;
+  }
+}
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  return isMobile;
+}
+
 function ExperienceCard({
   index,
-  company,
-  role,
-  duration,
-  description,
+  experience,
+  className,
 }: {
   index: number;
-  company: string;
-  role: string;
-  duration: string;
-  description: string;
+  experience: Experience;
+  className?: string;
 }) {
-  const isCurrent = duration.toLowerCase().includes("present");
+  const isCurrentRole = experience.duration.toLowerCase().includes("present");
 
   return (
-    <motion.div
-      whileHover={{ y: -6 }}
-      className="group relative flex h-full min-h-80 flex-col overflow-hidden rounded-2xl border border-near-black/10 bg-white p-7 transition-shadow hover:shadow-[0_30px_60px_-30px_rgba(12,12,20,0.25)] dark:border-white/10 dark:bg-white/5"
+    <div
+      className={`relative flex flex-col overflow-hidden rounded-2xl border border-near-black/10 bg-white p-7 dark:border-white/10 dark:bg-white/5 ${className ?? ""}`}
     >
       <span
         aria-hidden="true"
@@ -47,45 +77,83 @@ function ExperienceCard({
       >
         {String(index + 1).padStart(2, "0")}
       </span>
-
       <div className="relative flex items-center gap-2">
-        {isCurrent && (
+        {isCurrentRole && (
           <span className="relative flex size-1.5">
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-75" />
             <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
           </span>
         )}
         <span className="text-[10px] font-semibold tracking-widest text-near-black/40 uppercase dark:text-white/40">
-          {duration}
+          {experience.duration}
         </span>
       </div>
-
       <p className="relative mt-4 font-heading text-xl font-black text-near-black dark:text-white">
-        {company}
+        {experience.company}
       </p>
-      <p className="relative mt-1 text-sm font-semibold text-cobalt">{role}</p>
-      <p className="relative mt-4 line-clamp-5 text-sm leading-relaxed text-near-black/55 dark:text-white/55">
-        {description}
+      <p className="relative mt-1 text-sm font-semibold text-cobalt">
+        {experience.role}
       </p>
-    </motion.div>
+      <p className="relative mt-4 text-sm leading-relaxed text-near-black/55 dark:text-white/55">
+        {experience.description}
+      </p>
+    </div>
   );
 }
 
-export function Experience() {
-  const [api, setApi] = useState<CarouselApi>();
-  const [progress, setProgress] = useState(0);
+function SectionHeading() {
+  return (
+    <>
+      <p className="mb-6 text-xs font-semibold tracking-widest text-cobalt uppercase">
+        Experience
+      </p>
+      <h2 className="font-heading text-[clamp(36px,5.5vw,64px)] leading-[1.05] font-black tracking-tight text-near-black dark:text-white">
+        {EXPERIENCE.length} roles.{" "}
+        <span className="font-serif text-cobalt italic">One obsession.</span>
+      </h2>
+    </>
+  );
+}
 
-  useEffect(() => {
-    if (!api) return;
-    const onScroll = () => setProgress(api.scrollProgress());
-    onScroll();
-    api.on("scroll", onScroll);
-    api.on("reInit", onScroll);
-    return () => {
-      api.off("scroll", onScroll);
-      api.off("reInit", onScroll);
-    };
-  }, [api]);
+function StaticExperienceList() {
+  return (
+    <section
+      id="experience"
+      className="bg-canvas py-20 lg:py-28 dark:bg-near-black"
+    >
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mb-12">
+          <SectionHeading />
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {EXPERIENCE.map((exp, index) => (
+            <ExperienceCard key={exp.company} index={index} experience={exp} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Mobile fallback: the 3D camera-journey doesn't translate to touch scroll, so this is a
+ * horizontal snap-scroll row instead — swipe through roles rather than fly past them. */
+function MobileExperienceRow() {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const { scrollXProgress } = useScroll({ container: rowRef });
+
+  useMotionValueEvent(scrollXProgress, "change", (value) => {
+    const next = Math.min(
+      EXPERIENCE.length - 1,
+      Math.max(0, Math.round(value * (EXPERIENCE.length - 1))),
+    );
+    setActiveIndex((prev) => (prev === next ? prev : next));
+  });
+
+  const progressWidth = useTransform(
+    scrollXProgress,
+    (value) => `${Math.min(Math.max(value, 0), 1) * 100}%`,
+  );
 
   return (
     <section
@@ -98,65 +166,69 @@ export function Experience() {
         viewport={{ once: true, margin: "-15%" }}
         variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
       >
-        <Carousel setApi={setApi} opts={{ align: "start", dragFree: true }}>
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <motion.p
-                  variants={fadeUp}
-                  className="mb-6 text-xs font-semibold tracking-widest text-cobalt uppercase"
-                >
-                  Experience
-                </motion.p>
-                <motion.h2
-                  variants={fadeUp}
-                  className="font-heading text-[clamp(36px,5.5vw,64px)] leading-[1.05] font-black tracking-tight text-near-black dark:text-white"
-                >
-                  {EXPERIENCE.length} roles.{" "}
-                  <span className="font-serif text-cobalt italic">
-                    One obsession.
-                  </span>
-                </motion.h2>
-              </div>
-
-              <motion.div variants={fadeUp} className="flex items-center gap-4">
-                <span className="hidden text-xs font-semibold tracking-widest text-near-black/35 uppercase sm:inline dark:text-white/35">
-                  Drag or use arrows
-                </span>
-                <div className="flex items-center gap-2">
-                  <CarouselPrevious className="static translate-x-0 translate-y-0" />
-                  <CarouselNext className="static translate-x-0 translate-y-0" />
-                </div>
-              </motion.div>
-            </div>
-          </div>
-
-          <motion.div
-            variants={fadeUp}
-            className="mx-auto mt-12 max-w-7xl px-6 lg:px-8"
-          >
-            <CarouselContent className="-ml-6">
-              {EXPERIENCE.map((exp, index) => (
-                <CarouselItem
-                  key={exp.company}
-                  className="basis-[85%] pl-6 sm:basis-[60%] lg:basis-[38%]"
-                >
-                  <ExperienceCard index={index} {...exp} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-
-            <div className="mt-8 h-1 w-full overflow-hidden rounded-full bg-near-black/10 dark:bg-white/10">
-              <motion.div
-                className="h-full rounded-full bg-cobalt"
-                style={{
-                  width: `${Math.min(Math.max(progress, 0), 1) * 100}%`,
-                }}
-              />
-            </div>
+        <div className="px-6">
+          <motion.div variants={fadeUp}>
+            <SectionHeading />
           </motion.div>
-        </Carousel>
+          <motion.p
+            variants={fadeUp}
+            className="mt-3 text-xs font-semibold tracking-widest text-near-black/35 uppercase dark:text-white/35"
+          >
+            Swipe to explore
+          </motion.p>
+        </div>
+
+        <motion.div
+          variants={fadeUp}
+          ref={rowRef}
+          className="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {EXPERIENCE.map((exp, index) => (
+            <ExperienceCard
+              key={exp.company}
+              index={index}
+              experience={exp}
+              className="w-[82%] shrink-0 snap-center sm:w-[60%]"
+            />
+          ))}
+        </motion.div>
+
+        <div className="mt-2 flex items-center gap-4 px-6">
+          <span className="text-xs font-semibold tracking-widest text-near-black/40 uppercase dark:text-white/40">
+            {String(activeIndex + 1).padStart(2, "0")} /{" "}
+            {String(EXPERIENCE.length).padStart(2, "0")}
+          </span>
+          <div className="h-1 flex-1 overflow-hidden rounded-full bg-near-black/10 dark:bg-white/10">
+            <motion.div
+              className="h-full rounded-full bg-cobalt"
+              style={{ width: progressWidth }}
+            />
+          </div>
+        </div>
       </motion.div>
     </section>
+  );
+}
+
+export function Experience() {
+  const prefersReducedMotion = useReducedMotion();
+  const isMobile = useIsMobile();
+
+  if (prefersReducedMotion) {
+    return <StaticExperienceList />;
+  }
+
+  if (isMobile === null) {
+    return <section id="experience" className="bg-canvas dark:bg-near-black" />;
+  }
+
+  if (isMobile) {
+    return <MobileExperienceRow />;
+  }
+
+  return (
+    <GalleryErrorBoundary fallback={<StaticExperienceList />}>
+      <ExperienceGallery />
+    </GalleryErrorBoundary>
   );
 }
