@@ -24,13 +24,14 @@ const CURVE_FREQUENCY = 0.55;
 const CURVE_AMPLITUDE = 3;
 const DEPTH_SPACING = 11;
 const SIDE_PUSH = 3.4;
-const SIDE_ROTATION = 0.62;
 const CAMERA_FOLLOW = 0.4;
 const CAMERA_HEIGHT = 0.35;
 const CAMERA_BACK = 6.2;
 const LOOKAHEAD = 0.9;
 const DAMP_LAMBDA = 3.4;
-const PANEL_DISTANCE_FACTOR = 6.4;
+/** Billboard scale-with-distance factor for the (non-3D-transformed) panel HTML — tune this to
+ * resize panels; unlike a full CSS 3D transform, this stays pixel-crisp at any scale. */
+const PANEL_DISTANCE_FACTOR = 5;
 /** Extra path length before panel 0 so the journey opens with it small and distant, approaching like every other panel. */
 const LEAD_IN = 1.4;
 const TOTAL_T = COUNT - 1 + LEAD_IN;
@@ -49,10 +50,9 @@ function panelPlacement(index: number) {
   const { x: cx, z } = centerline(index);
   const side = index % 2 === 0 ? 1 : -1;
   return {
-    x: cx + side * SIDE_PUSH,
+    x: cx,
+    sideOffset: side * SIDE_PUSH,
     z,
-    baseRotationY:
-      -side * SIDE_ROTATION - Math.cos(index * CURVE_FREQUENCY) * 0.18,
   };
 }
 
@@ -140,23 +140,35 @@ function Panel({
   activeRef: React.MutableRefObject<number>;
 }) {
   const groupRef = useRef<THREE.Group>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
-  const { x, z, baseRotationY } = useMemo(() => panelPlacement(index), [index]);
+  const {
+    x: cx,
+    sideOffset,
+    z,
+  } = useMemo(() => panelPlacement(index), [index]);
   const isCurrentRole = experience.duration.toLowerCase().includes("present");
 
   useFrame(() => {
     const delta = index - activeRef.current;
     const absDelta = Math.abs(delta);
-    const scale = THREE.MathUtils.clamp(1 - absDelta * 0.16, 0.45, 1.08);
-    const rotationBlend = THREE.MathUtils.clamp(absDelta / 1.25, 0, 1);
     const forwardNudge = THREE.MathUtils.clamp(1 - absDelta, 0, 1) * 0.6;
+    // Fades the alternating side offset back to the path's centerline as a panel becomes
+    // focused, so every card ends up centered on screen instead of only the ones whose
+    // curve position happens to cancel out the side push. Smoothstep eases the ramp in and
+    // out (zero velocity at both ends) instead of snapping to/from a constant linear speed.
+    const sideBlend = THREE.MathUtils.smoothstep(absDelta, 0, 1.25);
 
     if (groupRef.current) {
-      groupRef.current.scale.setScalar(scale);
-      groupRef.current.rotation.y = baseRotationY * rotationBlend;
+      groupRef.current.position.x = cx + sideOffset * sideBlend;
       groupRef.current.position.z = z + forwardNudge;
     }
+    // Plain 2D scale (not a 3D transform), so it stays crisp — keeps off-focus panels
+    // shrunk down so they don't spill past the viewport edges near the sides of the path.
+    const cardScale = THREE.MathUtils.clamp(1 - absDelta * 0.16, 0.45, 1.08);
+    if (cardRef.current)
+      cardRef.current.style.transform = `scale(${cardScale})`;
     const focus = THREE.MathUtils.clamp(1 - absDelta * 0.85, 0, 1);
     if (detailRef.current) detailRef.current.style.opacity = String(focus);
     if (indicatorRef.current) {
@@ -167,9 +179,12 @@ function Panel({
   });
 
   return (
-    <group ref={groupRef} position={[x, 0, z]}>
-      <Html transform distanceFactor={PANEL_DISTANCE_FACTOR} center>
-        <div className="relative w-[280px] overflow-hidden rounded-[1.75rem] border border-near-black/10 bg-white/95 p-6 shadow-[0_40px_90px_-40px_rgba(12,12,20,0.45)] backdrop-blur-md sm:w-[340px] sm:p-7 dark:border-white/10 dark:bg-near-black/85">
+    <group ref={groupRef} position={[cx + sideOffset, 0, z]}>
+      <Html distanceFactor={PANEL_DISTANCE_FACTOR} center>
+        <div
+          ref={cardRef}
+          className="relative w-[280px] overflow-hidden rounded-[1.75rem] border border-near-black/10 bg-white/95 p-6 shadow-[0_40px_90px_-40px_rgba(12,12,20,0.45)] sm:w-[340px] sm:p-7 dark:border-white/10 dark:bg-near-black/85"
+        >
           <span
             aria-hidden="true"
             className="pointer-events-none absolute -top-5 -right-2 font-heading text-7xl font-black text-near-black/[0.05] select-none sm:text-8xl dark:text-white/[0.07]"
